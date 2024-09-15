@@ -1,0 +1,112 @@
+/* Password Strength Checker*/
+
+import re
+import math
+
+# Dictionary of common weak passwords (expanded)
+common_passwords = ["password", "123456", "qwerty", "12345678", "abc123", "letmein", "iloveyou", "admin", "welcome", "monkey"]
+
+# Character sets for entropy calculation
+CHAR_SETS = [
+    (r"[a-z]", 26),  # Lowercase
+    (r"[A-Z]", 26),  # Uppercase
+    (r"[0-9]", 10),  # Numbers
+    (r"[@!#$%^&*(),.?\":{}|<>]", 32)  # Special characters
+]
+
+# Function to calculate entropy based on character variety
+def calculate_entropy(password):
+    pool_size = 0
+    for pattern, size in CHAR_SETS:
+        if re.search(pattern, password):
+            pool_size += size
+
+    # Entropy formula: log2(pool_size^length)
+    if pool_size == 0:
+        return 0
+    entropy = math.log2(pool_size) * len(password)
+    return entropy
+
+# Function to check password against common patterns and weaknesses
+def check_common_patterns(password):
+    feedback = []
+    if password in common_passwords:
+        feedback.append("Password is too common and easily guessable.")
+    
+    # Detect repeated sequences like 'abcabc', '123123'
+    if re.search(r"(.)\1{2,}", password):
+        feedback.append("Password contains repeated characters or sequences.")
+
+    # Detect ascending/descending character patterns (e.g., '123456', 'abcdef', 'qwerty')
+    if re.search(r"(?=.*1234|abcd|qwerty)", password):
+        feedback.append("Password contains easily guessable patterns like sequences.")
+    
+    return feedback
+
+# Main function to check password strength
+def check_password_strength_advanced(password):
+    feedback = []
+    score = 0
+
+    # Length check
+    if len(password) >= 12:
+        score += 2  # Stronger length
+    elif len(password) >= 8:
+        score += 1
+    else:
+        feedback.append("Password is too short. Consider using at least 12 characters.")
+
+    # Character variety check
+    if re.search(r"[a-z]", password) and re.search(r"[A-Z]", password):
+        score += 1  # Mix of lowercase and uppercase
+    else:
+        feedback.append("Add both lowercase and uppercase letters for better security.")
+
+    if re.search(r"[0-9]", password):
+        score += 1  # Contains numbers
+    else:
+        feedback.append("Include numbers to make the password stronger.")
+
+    if re.search(r"[@!#$%^&*(),.?\":{}|<>]", password):
+        score += 1  # Contains special characters
+    else:
+        feedback.append("Include special characters for more complexity.")
+
+    # Entropy check
+    entropy = calculate_entropy(password)
+    if entropy < 40:
+        feedback.append("Password has low entropy. Increase complexity for stronger protection.")
+    elif entropy >= 40 and entropy < 60:
+        score += 1  # Decent entropy
+    elif entropy >= 60:
+        score += 2  # Strong entropy
+
+    # Check for common patterns and dictionary words
+    feedback.extend(check_common_patterns(password))
+
+    # Determine final strength based on score
+    if score <= 2:
+        strength = "Very Weak"
+    elif score == 3:
+        strength = "Weak"
+    elif score == 4:
+        strength = "Medium"
+    elif score == 5:
+        strength = "Strong"
+    else:
+        strength = "Very Strong"
+
+    return strength, feedback
+
+# Example usage
+password = input("Enter your password: ")
+strength, feedback = check_password_strength_advanced(password)
+
+print(f"Password Strength: {strength}")
+print("Feedback:")
+for suggestion in feedback:
+    print(f"- {suggestion}")
+
+# Optional: print entropy if needed for user information
+entropy = calculate_entropy(password)
+print(f"Password Entropy: {entropy:.2f} bits")
