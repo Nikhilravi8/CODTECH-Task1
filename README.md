@@ -9,6 +9,8 @@ Domain: CYBER SECURITY&ETHICAL HACKING
 Duration:AUGUST to SEPTEMBER 2024.
 
 **Overview of the Project**
+![image](https://github.com/user-attachments/assets/e25752ea-5ca7-4e66-80b8-8d5c88e579ac)
+![image](https://github.com/user-attachments/assets/f6411473-8340-43e8-b9c4-83ce0de8e6cb)
 
 **Project:**
 Password Strength Checker is a tool designed to assess the strength of user passwords by analyzing their length, complexity, entropy, and susceptibility to common patterns or dictionary attacks. The tool provides real-time feedback and suggestions to help users create stronger, more secure passwords.
